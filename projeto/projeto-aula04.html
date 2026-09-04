@@ -630,6 +630,36 @@ document.getElementById('cpf').addEventListener('input', function (e) {
 
     document.getElementById('idade').value(anos+' Anos')
   }))
+
+  campoCep.addEventListener('blur' function(){
+    const cepLimpo = this.value.replace(/\D/g,``)
+
+    if (cepLimpo.length !== 8){
+      alert ('cep digitado está incorreto');
+      return;
+    }
+
+    fetch(`https://viacep.com.br/ws/${cepLimpo}/json`)
+    .then (r =>{
+      if(!r.ok) throw new Error ('Erro na rede dos correios');
+      return r.json();
+    })
+    .then(dados =>{
+     if(dados.erro){
+      alert('cep não encontrado');
+      return;
+     }
+
+     document.getElementById('logradouro').value = dados.logradouro || '';
+     document.getElementById('bairro').value = dados.bairro || '';
+     document.getElementById('cidade').value = dados.localidade || '';
+     document.getElementById('estado').value = dados.uf || '';
+     document.getElementById('ibge').value = dados.ibge || '';
+    })
+      
+
+  })
+
   </script>
 
 </body>
