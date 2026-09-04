@@ -631,7 +631,7 @@ document.getElementById('cpf').addEventListener('input', function (e) {
     document.getElementById('idade').value(anos+' Anos')
   }))
 
-  campoCep.addEventListener('blur' function(){
+  campoCep.addEventListener('blur' , function(){
     const cepLimpo = this.value.replace(/\D/g,``)
 
     if (cepLimpo.length !== 8){
@@ -650,6 +650,7 @@ document.getElementById('cpf').addEventListener('input', function (e) {
       return;
      }
 
+     console.log(dados);
      document.getElementById('logradouro').value = dados.logradouro || '';
      document.getElementById('bairro').value = dados.bairro || '';
      document.getElementById('cidade').value = dados.localidade || '';
