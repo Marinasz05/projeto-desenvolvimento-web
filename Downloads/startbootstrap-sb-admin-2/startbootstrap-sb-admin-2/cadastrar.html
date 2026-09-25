@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Cadastro de Pet</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div id="section-cadastrar" class="page-section">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-plus-circle text-primary mr-2"></i>Cadastrar Pet Perdido</h1>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                </div>
+                <div class="card-body p-4">
+                    <form id="formCadastrarPet" onsubmit="salvarPet(event)">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold small">Nome do Pet *</label>
+                                <input type="text" class="form-control" id="petNome" placeholder="Ex: Bob, Thor, Luna" required>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-bold small">Espécie *</label>
+                                <select class="form-control" id="petEspecie" required>
+                                    <option value="Cão">Cão</option>
+                                    <option value="Gato">Gato</option>
+                                    <option value="Ave">Ave</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-bold small">Porte *</label>
+                                <select class="form-control" id="petPorte" required>
+                                    <option value="Pequeno">Pequeno</option>
+                                    <option value="Médio">Médio</option>
+                                    <option value="Grande">Grande</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-bold small">Raça</label>
+                                <input type="text" class="form-control" id="petRaca" placeholder="Ex: Vira-lata (SRD), Poodle, Siamês">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-bold small">Cor Dominante *</label>
+                                <input type="text" class="form-control" id="petCor" placeholder="Ex: Preto e Branco, Caramelo" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-bold small">Data do Desaparecimento *</label>
+                                <input type="date" class="form-control" id="petData" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold small">Cidade / Bairro / Referência *</label>
+                                <input type="text" class="form-control" id="petLocal" placeholder="Ex: São Paulo - Bairro Jardins próximo à praça" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-bold small">WhatsApp do Responsável *</label>
+                                <input type="tel" class="form-control" id="petContato" placeholder="Ex: 11999998888" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold small">URL da Foto do Pet</label>
+                            <input type="url" class="form-control" id="petFoto" placeholder="https://exemplo.com/foto.jpg">
+                            <small class="form-text text-muted">Se deixar em branco, o sistema gerará uma imagem ilustrativa automática.</small>
+                        </div>
+                                <a href="login.html" class="btn btn-primary btn-user btn-block">
+                                    Cadastre
+                                </a>
+                                <hr>
+                        
+                            </form>
+                           
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>

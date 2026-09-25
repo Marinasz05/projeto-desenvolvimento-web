@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Radar Pet - Gestão e Tabelas de Dados</title>
+
+    <!-- Google Fonts (Nunito - Padrão SB Admin 2) -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap 4.6 & SB Admin 2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css">
+
+    <style>
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fc;
+            padding: 24px;
+        }
+
+        .pet-avatar {
+            width: 42px;
+            height: 42px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #eaecf4;
+        }
+
+        .badge-status-perdido {
+            background-color: #e74a3b;
+            color: #ffffff;
+            font-size: 85%;
+        }
+
+        .badge-status-visto {
+            background-color: #f6c23e;
+            color: #ffffff;
+            font-size: 85%;
+        }
+
+        .badge-status-reencontrado {
+            background-color: #1cc88a;
+            color: #ffffff;
+            font-size: 85%;
+        }
+
+        .table-sortable th {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .table-sortable th:hover {
+            background-color: #f1f3f9;
+        }
+
+        .table-sortable th i.sort-icon {
+            opacity: 0.3;
+            margin-left: 6px;
+        }
+
+        .table-sortable th.sorted i.sort-icon {
+            opacity: 1.0;
+            color: #4e73df;
+        }
+
+        .card-header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        #sys-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1050;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Toast de Notificação do Sistema -->
+    <div id="sys-toast" class="toast fade show bg-success text-white shadow-lg border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white border-bottom-0">
+            <i class="fas fa-check-circle mr-2"></i>
+            <strong class="mr-auto">Sistema SB Admin 2</strong>
+            <button type="button" class="ml-2 mb-1 close text-white" onclick="fecharToast()">&times;</button>
+        </div>
+        <div class="toast-body" id="sys-toast-msg">
+            Ação concluída com sucesso!
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <!-- Cabeçalho da Página -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
+                <i class="fas fa-table text-primary mr-2"></i>Tabela de Gestão de Pets
+            </h1>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary shadow-sm mr-2" onclick="exportarTabelaCSV()">
+                    <i class="fas fa-download fa-sm mr-1"></i> Exportar CSV
+                </button>
+                <button class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#modalNovoPet">
+                    <i class="fas fa-plus fa-sm mr-1"></i> Novo Novo Registro
+                </button>
+            </div>
+        </div>
+
+        <!-- Card de Exibição da Tabela principal -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 card-header-actions">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-paw mr-1"></i> Registros de Animais Desaparecidos & Avistados
+                </h6>
+
+                <!-- Filtros de Tabela e Busca rápida -->
+                <div class="d-flex align-items-center flex-wrap" style="gap: 10px;">
+                    <div class="input-group input-group-sm" style="width: 220px;">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input type="text" id="tableSearchInput" class="form-control bg-light border-0 small" placeholder="Buscar registros..." onkeyup="filtrarTabela()">
+                    </div>
+
+                    <select id="filterStatus" class="form-control form-control-sm" style="width: 150px;" onchange="filtrarTabela()">
+                        <option value="">Todos Status</option>
+                        <option value="Perdido">Perdido</option>
+                        <option value="Visto">Visto</option>
+                        <option value="Reencontrado">Reencontrado</option>
+                    </select>
+
+                    <select id="filterEspecie" class="form-control form-control-sm" style="width: 140px;" onchange="filtrarTabela()">
+                        <option value="">Todas Espécies</option>
+                        <option value="Cão">Cão</option>
+                        <option value="Gato">Gato</option>
+                        <option value="Ave">Ave</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped table-sortable mb-0" id="dataTable" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width: 60px;" class="text-center">Foto</th>
+                                <th onclick="ordenarPor('nome')">Pet / ID <i class="fas fa-sort sort-icon"></i></th>
+                                <th onclick="ordenarPor('especie')">Espécie / Raça <i class="fas fa-sort sort-icon"></i></th>
+                                <th onclick="ordenarPor('local')">Localização <i class="fas fa-sort sort-icon"></i></th>
+                                <th onclick="ordenarPor('data')">Data Registro <i class="fas fa-sort sort-icon"></i></th>
+                                <th>Contato / Recompensa</th>
+                                <th onclick="ordenarPor('status')" class="text-center">Status <i class="fas fa-sort sort-icon"></i></th>
+                                <th class="text-center" style="width: 130px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="petTableBody">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Rodapé com Paginação do SB Admin 2 -->
+            <div class="card-footer py-3 d-flex align-items-center justify-content-between flex-wrap">
+                <div class="small text-gray-600 mb-2 mb-md-0" id="tableInfoText">
+                    Exibindo 0 até 0 de 0 registros
+                </div>
+                <ul class="pagination pagination-sm m-0" id="tablePagination">
+                    <!-- Botões de paginação via JS -->
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal: Detalhes do Registro -->
+    <div class="modal fade" id="modalDetalhesPet" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title font-weight-bold" id="modalPetTitle"><i class="fas fa-info-circle mr-2"></i>Detalhes do Pet</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalPetContent">
+                    <!-- Conteúdo dinâmico via JS -->
+                </div>
+                <div class="modal-footer" id="modalPetFooter">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo Cadastro -->
+    <div class="modal fade" id="modalNovoPet" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title font-weight-bold"><i class="fas fa-plus-circle mr-2"></i>Cadastrar Novo Registro na Tabela</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAdicionarPet" onsubmit="adicionarNovoRegistro(event)">
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="small font-weight-bold text-gray-700">Nome do Pet *</label>
+                                <input type="text" class="form-control" id="addNome" required placeholder="Ex: Bob">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="small font-weight-bold text-gray-700">Espécie *</label>
+                                <select class="form-control" id="addEspecie" required>
+                                    <option value="Cão">Cão</option>
+                                    <option value="Gato">Gato</option>
+                                    <option value="Ave">Ave</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="small font-weight-bold text-gray-700">Status *</label>
+                                <select class="form-control" id="addStatus" required>
+                                    <option value="Perdido">Perdido</option>
+                                    <option value="Visto">Visto</option>
+                                    <option value="Reencontrado">Reencontrado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="small font-weight-bold text-gray-700">Raça</label>
+                                <input type="text" class="form-control" id="addRaca" placeholder="Ex: Labrador, Poodle, SRD">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="small font-weight-bold text-gray-700">Localização *</label>
+                                <input type="text" class="form-control" id="addLocal" required placeholder="Ex: Bairro Centro - SP">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="small font-weight-bold text-gray-700">Data de Registro *</label>
+                                <input type="date" class="form-control" id="addData" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="small font-weight-bold text-gray-700">WhatsApp / Telefone *</label>
+                                <input type="text" class="form-control" id="addContato" required placeholder="Ex: (11) 99999-8888">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="small font-weight-bold text-gray-700">Recompensa</label>
+                                <input type="text" class="form-control" id="addRecompensa" placeholder="Ex: R$ 300,00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="small font-weight-bold text-gray-700">URL da Foto</label>
+                            <input type="url" class="form-control" id="addFoto" placeholder="https://exemplo.com/foto.jpg">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success font-weight-bold"><i class="fas fa-check mr-1"></i> Salvar na Tabela</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts da aplicação (jQuery, Bootstrap & Lógica da Tabela) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Dados de amostragem padrão
+        let petsData = [
+            {
+                id: 'PET-001',
+                nome: 'Max',
+                especie: 'Cão',
+                raca: 'Golden Retriever',
+                local: 'Centro, São Paulo - SP',
+                data: '2026-09-20',
+                contato: '(11) 98888-7777',
+                recompensa: 'R$ 500,00',
+                status: 'Perdido',
+                foto: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Usava coleira azul de couro no momento do desaparecimento.'
+            },
+            {
+                id: 'PET-002',
+                nome: 'Mia',
+                especie: 'Gato',
+                raca: 'Siamês',
+                local: 'Pinheiros, São Paulo - SP',
+                data: '2026-09-21',
+                contato: '(11) 97777-6666',
+                recompensa: 'Sem recompensa',
+                status: 'Visto',
+                foto: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Avistada perto da praça principal, parece assustada.'
+            },
+            {
+                id: 'PET-003',
+                nome: 'Thor',
+                especie: 'Cão',
+                raca: 'Bulldog Francês',
+                local: 'Moema, São Paulo - SP',
+                data: '2026-09-18',
+                contato: '(11) 96666-5555',
+                recompensa: 'R$ 1.000,00',
+                status: 'Reencontrado',
+                foto: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Entregue ao dono com sucesso!'
+            },
+            {
+                id: 'PET-004',
+                nome: 'Loro',
+                especie: 'Ave',
+                raca: 'Papagaio Verdadeiro',
+                local: 'Tatuapé, São Paulo - SP',
+                data: '2026-09-22',
+                contato: '(11) 95555-4444',
+                recompensa: 'R$ 200,00',
+                status: 'Perdido',
+                foto: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Atende pelo nome de Loro e fala algumas palavras simples.'
+            },
+            {
+                id: 'PET-005',
+                nome: 'Bob',
+                especie: 'Cão',
+                raca: 'Poodle',
+                local: 'Vila Mariana, São Paulo - SP',
+                data: '2026-09-23',
+                contato: '(11) 94444-3333',
+                recompensa: 'Sem recompensa',
+                status: 'Visto',
+                foto: 'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Visto correndo próximo à estação de metrô.'
+            },
+            {
+                id: 'PET-006',
+                nome: 'Mel',
+                especie: 'Gato',
+                raca: 'Persa',
+                local: 'Jardins, São Paulo - SP',
+                data: '2026-09-24',
+                contato: '(11) 93333-2222',
+                recompensa: 'R$ 800,00',
+                status: 'Perdido',
+                foto: 'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=150&q=80',
+                descricao: 'Gatinha muito peluda e dócil.'
+            }
+        ];
+
+        let dadosFiltrados = [...petsData];
+        let ordenacaoAtual = { coluna: 'data', direcao: 'desc' };
+        let paginaAtual = 1;
+        const itensPorPagina = 5;
+
+        // Inicialização ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            renderizarTabela();
+        });
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('petTableBody');
+            tbody.innerHTML = '';
+
+            const inicio = (paginaAtual - 1) * itensPorPagina;
+            const fim = inicio + itensPorPagina;
+            const paginados = dadosFiltrados.slice(inicio, fim);
+
+            if (paginados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-gray-500">
+                            <i class="fas fa-folder-open fa-2x mb-2"></i><br>
+                            Nenhum registro encontrado para os filtros selecionados.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                paginados.forEach(pet => {
+                    let badgeClass = 'badge-status-perdido';
+                    if (pet.status === 'Visto') badgeClass = 'badge-status-visto';
+                    if (pet.status === 'Reencontrado') badgeClass = 'badge-status-reencontrado';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="text-center align-middle">
+                            <img src="${pet.foto}" class="pet-avatar" alt="${pet.nome}" onerror="this.src='https://placehold.co/100?text=Pet'">
+                        </td>
+                        <td class="align-middle">
+                            <strong class="text-primary">${pet.nome}</strong><br>
+                            <small class="text-muted">${pet.id}</small>
+                        </td>
+                        <td class="align-middle">
+                            <span>${pet.especie}</span><br>
+                            <small class="text-muted">${pet.raca || 'SRD'}</small>
+                        </td>
+                        <td class="align-middle">
+                            <small><i class="fas fa-map-marker-alt text-danger mr-1"></i>${pet.local}</small>
+                        </td>
+                        <td class="align-middle small">
+                            ${formatarDataBR(pet.data)}
+                        </td>
+                        <td class="align-middle">
+                            <small class="font-weight-bold text-dark"><i class="fab fa-whatsapp text-success mr-1"></i>${pet.contato}</small><br>
+                            <small class="text-info">${pet.recompensa || 'Sem recompensa'}</small>
+                        </td>
+                        <td class="text-center align-middle">
+                            <span class="badge ${badgeClass} px-2 py-1">${pet.status}</span>
+                        </td>
+                        <td class="text-center align-middle">
+                            <button class="btn btn-sm btn-circle btn-info mr-1" onclick="verDetalhes('${pet.id}')" title="Ver Detalhes">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-circle btn-success mr-1" onclick="alterarStatus('${pet.id}', 'Reencontrado')" title="Marcar como Reencontrado">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-sm btn-circle btn-danger" onclick="excluirRegistro('${pet.id}')" title="Excluir Registro">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            atualizarPaginaInfo();
+            renderizarPaginacao();
+        }
+
+        function filtrarTabela() {
+            const termo = document.getElementById('tableSearchInput').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const especie = document.getElementById('filterEspecie').value;
+
+            dadosFiltrados = petsData.filter(item => {
+                const matchTexto = item.nome.toLowerCase().includes(termo) ||
+                                   item.local.toLowerCase().includes(termo) ||
+                                   item.id.toLowerCase().includes(termo) ||
+                                   item.raca.toLowerCase().includes(termo);
+
+                const matchStatus = status === '' || item.status === status;
+                const matchEspecie = especie === '' || item.especie === especie;
+
+                return matchTexto && matchStatus && matchEspecie;
+            });
+
+            paginaAtual = 1;
+            renderizarTabela();
+        }
+
+        function ordenarPor(coluna) {
+            if (ordenacaoAtual.coluna === coluna) {
+                ordenacaoAtual.direcao = ordenacaoAtual.direcao === 'asc' ? 'desc' : 'asc';
+            } else {
+                ordenacaoAtual.coluna = coluna;
+                ordenacaoAtual.direcao = 'asc';
+            }
+
+            dadosFiltrados.sort((a, b) => {
+                let valA = a[coluna] || '';
+                let valB = b[coluna] || '';
+
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return ordenacaoAtual.direcao === 'asc' ? -1 : 1;
+                if (valA > valB) return ordenacaoAtual.direcao === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderizarTabela();
+        }
+
+        function atualizarPaginaInfo() {
+            const total = dadosFiltrados.length;
+            const inicio = total === 0 ? 0 : (paginaAtual - 1) * itensPorPagina + 1;
+            const fim = Math.min(paginaAtual * itensPorPagina, total);
+
+            document.getElementById('tableInfoText').innerText = `Exibindo ${inicio} até ${fim} de ${total} registros`;
+        }
+
+        function renderizarPaginacao() {
+            const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina) || 1;
+            const pagUl = document.getElementById('tablePagination');
+            pagUl.innerHTML = '';
+
+            // Botão Anterior
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${paginaAtual === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="#" onclick="mudarPagina(${paginaAtual - 1}); return false;">Anterior</a>`;
+            pagUl.appendChild(prevLi);
+
+            // Números das páginas
+            for (let i = 1; i <= totalPaginas; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === paginaAtual ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#" onclick="mudarPagina(${i}); return false;">${i}</a>`;
+                pagUl.appendChild(li);
+            }
+
+            // Botão Próximo
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${paginaAtual === totalPaginas ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="#" onclick="mudarPagina(${paginaAtual + 1}); return false;">Próximo</a>`;
+            pagUl.appendChild(nextLi);
+        }
+
+        function mudarPagina(novaPagina) {
+            const totalPaginas = Math.ceil(dadosFiltrados.length / itensPorPagina) || 1;
+            if (novaPagina >= 1 && novaPagina <= totalPaginas) {
+                paginaAtual = novaPagina;
+                renderizarTabela();
+            }
+        }
+
+        function verDetalhes(id) {
+            const pet = petsData.find(p => p.id === id);
+            if (!pet) return;
+
+            document.getElementById('modalPetTitle').innerText = `Ficha do Pet: ${pet.nome} (${pet.id})`;
+            document.getElementById('modalPetContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 text-center mb-3">
+                        <img src="${pet.foto}" class="img-fluid rounded shadow-sm mb-2" onerror="this.src='https://placehold.co/300x300?text=Pet'">
+                        <div>
+                            <span class="badge badge-primary px-3 py-1">${pet.status}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="font-weight-bold text-primary">${pet.nome}</h4>
+                        <p class="mb-1"><strong>Espécie:</strong> ${pet.especie} | <strong>Raça:</strong> ${pet.raca || 'SRD'}</p>
+                        <p class="mb-1"><strong>Localização:</strong> ${pet.local}</p>
+                        <p class="mb-1"><strong>Data de Registro:</strong> ${formatarDataBR(pet.data)}</p>
+                        <p class="mb-1"><strong>Contato do Tutor:</strong> ${pet.contato}</p>
+                        <p class="mb-1"><strong>Recompensa:</strong> ${pet.recompensa || 'Não informada'}</p>
+                        <hr>
+                        <p class="small text-muted mb-0"><strong>Observações:</strong><br>${pet.descricao || 'Sem informações adicionais cadastradas.'}</p>
+                    </div>
+                </div>
+            `;
+
+            $('#modalDetalhesPet').modal('show');
+        }
+
+        function alterarStatus(id, novoStatus) {
+            const pet = petsData.find(p => p.id === id);
+            if (pet) {
+                pet.status = novoStatus;
+                exibirToast(`Status de ${pet.nome} alterado para "${novoStatus}".`);
+                filtrarTabela();
+            }
+        }
+
+        function excluirRegistro(id) {
+            petsData = petsData.filter(p => p.id !== id);
+            exibirToast('Registro excluído com sucesso.');
+            filtrarTabela();
+        }
+
+        function adicionarNovoRegistro(e) {
+            e.preventDefault();
+
+            const novo = {
+                id: `PET-${Math.floor(100 + Math.random() * 900)}`,
+                nome: document.getElementById('addNome').value,
+                especie: document.getElementById('addEspecie').value,
+                raca: document.getElementById('addRaca').value || 'SRD',
+                local: document.getElementById('addLocal').value,
+                data: document.getElementById('addData').value,
+                contato: document.getElementById('addContato').value,
+                recompensa: document.getElementById('addRecompensa').value || 'Sem recompensa',
+                status: document.getElementById('addStatus').value,
+                foto: document.getElementById('addFoto').value || 'https://placehold.co/150?text=Pet',
+                descricao: 'Cadastrado diretamente pela interface de tabelas.'
+            };
+
+            petsData.unshift(novo);
+            document.getElementById('formAdicionarPet').reset();
+            $('#modalNovoPet').modal('hide');
+
+            exibirToast(`Novo pet ${novo.nome} adicionado à tabela!`);
+            filtrarTabela();
+        }
+
+        function exportarTabelaCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,ID;Nome;Especie;Raca;Local;Data;Contato;Status\n";
+            dadosFiltrados.forEach(item => {
+                const linha = [
+                    item.id,
+                    item.nome,
+                    item.especie,
+                    item.raca,
+                    `"${item.local}"`,
+                    item.data,
+                    item.contato,
+                    item.status
+                ].join(";");
+                csvContent += linha + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "radar_pet_tabela.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);

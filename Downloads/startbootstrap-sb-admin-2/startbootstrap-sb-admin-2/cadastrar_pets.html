@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Cadastro de Pet</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary d-flex align-items-center justify-content-center min-vh-100 my-4">
+
+    <div class="container">
+
+        <!-- Centraliza o cartão horizontalmente -->
+        <div class="row justify-content-center">
+
+            <!-- Define a largura do cartão em ecrãs médios e grandes -->
+            <div class="col-xl-7 col-lg-8 col-md-10">
+
+                <div class="card o-hidden border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <div class="p-5">
+                            
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Cadastrar Pet Perdido</h1>
+                            </div>
+
+                            <form class="user">
+                                
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label class="font-weight-bold small text-gray-800">Nome do Pet *</label>
+                                        <input type="text" class="form-control form-control-user" id="exampleName" placeholder="Nome">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="font-weight-bold small text-gray-800">Espécie *</label>
+                                        <select class="form-control" id="petEspecie" required style="border-radius: 10rem; height: 50px; padding: 0.5rem 1rem;">
+                                            <option value="Cão">Cão</option>
+                                            <option value="Gato">Gato</option>
+                                            <option value="Ave">Ave</option>
+                                            <option value="Outro">Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label class="font-weight-bold small text-gray-800">Cor Dominante *</label>
+                                        <input type="text" class="form-control form-control-user" id="exampleCor" placeholder="Branco,Preto,Caramelo">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="font-weight-bold small text-gray-800">Porte *</label>
+                                        <input type="text" class="form-control form-control-user" id="porte" placeholder="Pequeno, Médio, Grande">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="font-weight-bold small text-gray-800">Endereço do Sumiço *</label>
+                                    <input type="text" class="form-control form-control-user" id="exampleEspecie" placeholder="Rua,Bairro,Referência">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="font-weight-bold small text-gray-800">Foto do Pet *</label>
+                                    <input class="form-control-file" id="imagem" name="imagem" type="file" accept="image/*" aria-describedby="curriculo-ajuda">
+                                    <small class="form-text text-muted" id="curriculo-ajuda">Máx. 5MB.</small>
+                                </div>
+
+                                <a href="login.html" class="btn btn-primary btn-user btn-block mt-4">
+                                    Cadastre
+                                </a>
+                                
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
